@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+
+.vscode/
+
+.pomodoro
+pomodoro.ini
+pomodoro.cfg
