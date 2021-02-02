@@ -43,3 +43,17 @@ sudo ln -s /path/to/pomodoro.py /usr/local/bin/pomodoro
 # run then with
 pomodoro work
 ```
+
+## Configuration
+
+You can add an INI formatted config file, the script searches its location and `$HOME` for a
+file named `.pomodoro`, `pomodoro.ini` or `pomodoro.cfg` which should have simple format of
+
+```ini
+[pomodoro]
+short = 5
+long = 15
+work = 25
+```
+
+This custom config can overridden any time with CLI options.

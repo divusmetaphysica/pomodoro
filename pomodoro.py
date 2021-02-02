@@ -9,7 +9,7 @@ from itertools import product
 CONFIG_PATHS = [
     root / path
     for root, path in product(
-        (Path("~").expanduser().absolute(), Path(".").absolute()),
+        (Path("~").expanduser().absolute(), Path(__file__).parent.absolute()),
         (".pomodoro", "pomodoro.ini", "pomodoro.cfg"),
     )
 ]
@@ -17,6 +17,19 @@ OUT = sys.stdout
 
 
 def get_config(args: argparse.Namespace) -> configparser.ConfigParser:
+    """
+    Config reader, if a INI format configuration file is found it is
+    read. If commandline parameters are provided the config is resolved
+    in order
+
+        CLI -> INI -> Defaults
+
+    Args:
+        args (argparse.Namespace): argparse commandline parameters
+
+    Returns:
+        configparser.ConfigParser: File configuration
+    """
     cfg = configparser.ConfigParser()
     paths = [path for path in CONFIG_PATHS if path.exists()]
     defaults = {"short": 5, "long": 15, "work": 25}
