@@ -53,12 +53,12 @@ async def timer(name: str, minutes: int) -> None:
             OUT.flush()
 
     OUT.write(" Done.")
-    OUT.write("\a")
+    OUT.write("\a\n")
     OUT.flush()
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Command line Pomodoro timer.")
     parser.add_argument(
         "cmd",
         type=str,
@@ -66,9 +66,9 @@ if __name__ == "__main__":
         choices=["short", "long", "work"],
         help="Period to wait"
     )
-    parser.add_argument("-w", "--work", type=int)
-    parser.add_argument("-s", "--short", type=int)
-    parser.add_argument("-l", "--long", type=int)
+    parser.add_argument("-w", "--work", type=int, help="Default 25 min.")
+    parser.add_argument("-s", "--short", type=int, help="Default 5 min.")
+    parser.add_argument("-l", "--long", type=int, help="Default 15 min.")
     args = parser.parse_args()
 
     cfg = get_config(args)
