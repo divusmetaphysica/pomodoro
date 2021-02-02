@@ -26,42 +26,41 @@ def get_config(args: argparse.Namespace) -> configparser.ConfigParser:
 
     if paths:
         cfg.read(paths[0])
-        cfg = cfg.get("pomodoro", {})
-        if not cfg:
-            cfg = defaults
     else:
-        cfg["pomodoro"] = defaults
-        with Path("./.pomodoro").absolute().open("w") as config:
-            cfg.write(config)
-        cfg = cfg["pomodoro"]
+        cfg["pomodoro"] = {}
 
-    cfg["short"] = args.short or cfg.get("short") or defaults["short"]
-    cfg["long"] = args.long or cfg.get("long") or defaults["long"]
-    cfg["work"] = args.work or cfg.get("work") or defaults["work"]
+    cfg["pomodoro"]["short"] = str(
+        args.short or cfg["pomodoro"].getint("short") or defaults["short"]
+        )
+    cfg["pomodoro"]["long"] = str(args.long or cfg["pomodoro"].getint("long") or defaults["long"])
+    cfg["pomodoro"]["work"] = str(args.work or cfg["pomodoro"].getint("work") or defaults["work"])
 
     return cfg
 
 
 async def timer(name: str, minutes: int) -> None:
     name = name.capitalize().rjust(5)
-    OUT.write(f"\r             ")
+    OUT.write(f"                             \r")
     OUT.flush()
+
     OUT.write(f"\r{name} {minutes:02d}:00")
     OUT.flush()
 
     for min in range(minutes-1, -1, -1):
         for sec in range(59, -1, -1):
-            OUT.write(f"\r{name} {min:02d}:{sec:02d}")
             await asyncio.sleep(1)
+            OUT.write(f"\r{name} {min:02d}:{sec:02d}")
             OUT.flush()
 
-    OUT.write(f" Done.\a")
+    OUT.write(" Done.")
+    OUT.write("\a")
     OUT.flush()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "initial",
+        "cmd",
         type=str,
         default="work",
         choices=["short", "long", "work"],
@@ -73,4 +72,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     cfg = get_config(args)
-    asyncio.run(timer(args.initial, cfg.get(args.initial)))
+    try:
+        minutes = cfg["pomodoro"].getint(args.cmd, 0)
+        asyncio.run(timer(name=args.cmd, minutes=minutes))
+    except KeyboardInterrupt:
+        exit()
